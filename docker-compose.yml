@@ -41,7 +41,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ES_JAVA_OPTS: -Xmx${ELASTICSEARCH_HEAP} -Xms${ELASTICSEARCH_HEAP} -Des.enforce.bootstrap.checks=true
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
@@ -67,7 +67,12 @@ services:
       - "5000:5000/udp"
       - "9600:9600"
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+      LOGSTASH_USERNAME: ${LOGSTASH_USERNAME}
+      LOGSTASH_PASSWORD: ${LOGSTASH_PASSWORD}
+      LS_JAVA_OPTS: -Xmx${LOGSTASH_HEAP} -Xms${LOGSTASH_HEAP}
     networks:
       - elk
     depends_on:
@@ -92,6 +97,10 @@ services:
         target: /certs/kibana.key
     ports:
       - "5601:5601"
+    environment:
+      KIBANA_USERNAME: ${KIBANA_USERNAME}
+      KIBANA_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
     networks:
       - elk
     depends_on:
